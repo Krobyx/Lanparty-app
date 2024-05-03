@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Home {
 
@@ -31,6 +33,20 @@ public class Home {
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
         mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
         container.add(mainTitle); // Dodamo label v container
+
+        if (Shramba.getInstance().isAdministrator()) {
+            JButton kraji = new JButton("Kraji");
+            kraji.setBounds(10, 200, 200, 40);
+            container.add(kraji);
+
+            kraji.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Kraji kraji = new Kraji();
+                    kraji.show();
+                }
+            });
+        }
     }
 
     public void show() {
