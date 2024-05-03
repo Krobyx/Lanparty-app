@@ -23,6 +23,7 @@ public class Home {
     private JLabel kodaSvojeSkupineLabel;
     private JButton zapustiSkupinoButton;
     private JButton claniSkupineButton;
+    private JButton igreEkipeButton;
 
     private Baza baza;
 
@@ -123,6 +124,18 @@ public class Home {
                 }
             });
 
+            igreEkipeButton = new JButton("Igre skupine");
+            igreEkipeButton.setBounds(10, 400, 200, 40);
+            container.add(igreEkipeButton);
+
+            igreEkipeButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    IgreEkipe igreEkipe = new IgreEkipe(Shramba.getInstance().uporabnikEkipaId);
+                    igreEkipe.show();
+                }
+            });
+
             kodaSkupineLabel = new JLabel("Koda skupine:");
             kodaSkupineLabel.setBounds(10, 200, 200, 40);
             container.add(kodaSkupineLabel);
@@ -192,6 +205,7 @@ public class Home {
         kodaSvojeSkupineLabel.setVisible(true);
         zapustiSkupinoButton.setVisible(true);
         claniSkupineButton.setVisible(true);
+        igreEkipeButton.setVisible(true);
 
         try {
             ResultSet resultSet = baza.executeQuery("SELECT get_ekipa_ime(" + Shramba.getInstance().uporabnikEkipaId + ");");
@@ -222,6 +236,7 @@ public class Home {
         kodaSvojeSkupineLabel.setVisible(false);
         zapustiSkupinoButton.setVisible(false);
         claniSkupineButton.setVisible(false);
+        igreEkipeButton.setVisible(false);
     }
 
     private void pridruziSe() {
