@@ -9,9 +9,9 @@ public class Baza {
     private static Baza instance = null;
 
     private Connection connection;
-    private String url = "jdbc:postgresql://tyke.db.elephantsql.com/upbczlcq";
-    private String username = "upbczlcq";
-    private String password = "n-tlB225Uwx-n_7FKVD96ZWn3-iY22MU";
+    private String url = "jdbc:postgresql://flora.db.elephantsql.com/ebdkfyec";
+    private String username = "ebdkfyec";
+    private String password = "k7hUJLejaGPVPu5NKoCw1lwEU62v2bQO";
 
     // Private constructor to prevent instantiation from outside
     private Baza() throws SQLException {

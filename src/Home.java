@@ -8,7 +8,15 @@ public class Home {
 
     private JLabel mainTitle;
 
+    private Baza baza;
+
     public Home() {
+        try {
+            baza = Baza.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         window = new JFrame("Lanparty aplikacija"); // Ustvarimo novo okno
         window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
         window.setBounds(10, 10, 1024, 768); // Nastavimo pozicijo in velikost okna
