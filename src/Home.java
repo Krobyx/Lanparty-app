@@ -22,6 +22,7 @@ public class Home {
     private JLabel imeSvojeSkupineLabel;
     private JLabel kodaSvojeSkupineLabel;
     private JButton zapustiSkupinoButton;
+    private JButton claniSkupineButton;
 
     private Baza baza;
 
@@ -110,6 +111,18 @@ public class Home {
                 }
             });
 
+            claniSkupineButton = new JButton("Člani skupine");
+            claniSkupineButton.setBounds(10, 350, 200, 40);
+            container.add(claniSkupineButton);
+
+            claniSkupineButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ClaniEkipe claniEkipe = new ClaniEkipe(Shramba.getInstance().uporabnikEkipaId);
+                    claniEkipe.show();
+                }
+            });
+
             kodaSkupineLabel = new JLabel("Koda skupine:");
             kodaSkupineLabel.setBounds(10, 200, 200, 40);
             container.add(kodaSkupineLabel);
@@ -178,6 +191,7 @@ public class Home {
         imeSvojeSkupineLabel.setVisible(true);
         kodaSvojeSkupineLabel.setVisible(true);
         zapustiSkupinoButton.setVisible(true);
+        claniSkupineButton.setVisible(true);
 
         try {
             ResultSet resultSet = baza.executeQuery("SELECT get_ekipa_ime(" + Shramba.getInstance().uporabnikEkipaId + ");");
@@ -207,6 +221,7 @@ public class Home {
         imeSvojeSkupineLabel.setVisible(false);
         kodaSvojeSkupineLabel.setVisible(false);
         zapustiSkupinoButton.setVisible(false);
+        claniSkupineButton.setVisible(false);
     }
 
     private void pridruziSe() {
@@ -223,10 +238,15 @@ public class Home {
 
             ResultSet resultSet = baza.executeQuery("SELECT get_uporabnik_ekipa_id(" + Shramba.getInstance().uporabnikId + ");");
             if (resultSet.next()) {
-                Shramba.getInstance().uporabnikEkipaId = resultSet.getInt(1);
-            }
+                int uporabnikEkipaId = resultSet.getInt(1);
 
-            removeJoinCreateGroup();
+                if (uporabnikEkipaId > 0) {
+                    Shramba.getInstance().uporabnikEkipaId = uporabnikEkipaId;
+                    removeJoinCreateGroup();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Napačna koda skupine.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Napaka pri pridruževanju skupini.", "Napaka", JOptionPane.ERROR_MESSAGE);
@@ -248,9 +268,8 @@ public class Home {
             ResultSet resultSet = baza.executeQuery("SELECT get_uporabnik_ekipa_id(" + Shramba.getInstance().uporabnikId + ");");
             if (resultSet.next()) {
                 Shramba.getInstance().uporabnikEkipaId = resultSet.getInt(1);
+                removeJoinCreateGroup();
             }
-
-            removeJoinCreateGroup();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Napaka pri ustvarjanju skupine.", "Napaka", JOptionPane.ERROR_MESSAGE);

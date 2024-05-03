@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
-public class Ekipe {
+public class ClaniEkipe {
     private JFrame window; // Okno aplikacije
     private Container container; // Glavni vsebnik za elemente uporabniškega vmesnika
     private JLabel mainTitle; // Glavni naslov obrazca
@@ -13,7 +13,11 @@ public class Ekipe {
     private DefaultTableModel model; // Model tabele za shranjevanje podatkov
     private Baza db;
 
-    public Ekipe() {
+    private int ekipaId;
+
+    public ClaniEkipe(int ekipaId) {
+        this.ekipaId = ekipaId;
+
         try {
             db = Baza.getInstance();
         } catch (Exception e) {
@@ -22,7 +26,7 @@ public class Ekipe {
         }
 
         // Inicializacija okna
-        window = new JFrame("Ekipe");
+        window = new JFrame("Člani ekipe");
         window.setPreferredSize(new Dimension(1024, 768)); // Nastavitev velikosti okna
         window.setBounds(10, 10, 1024, 768); // Nastavitev položaja in velikosti okna
         window.setLayout(new BorderLayout()); // Uporaba BorderLayout za razporeditev komponent
@@ -35,7 +39,7 @@ public class Ekipe {
         container.setLayout(new BorderLayout());
 
         // Dodajanje glavnega naslova obrazca
-        mainTitle = new JLabel("Ekipe");
+        mainTitle = new JLabel("Člani ekipe");
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48));
         mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         container.add(mainTitle);
@@ -44,14 +48,16 @@ public class Ekipe {
         model = new DefaultTableModel();
         model.addColumn("ID"); // Dodajanje stolpca "ID"
         model.addColumn("Ime"); // Dodajanje stolpca "Ime"
-        model.addColumn("Koda"); // Dodajanje stolpca "Poštna številka"
+        model.addColumn("Priimek"); // Dodajanje stolpca "Poštna številka"
+        model.addColumn("Email"); // Dodajanje stolpca "Poštna številka"
+
 
         // Pridobivanje podatkov iz podatkovne baze
         try {
-            String query = "SELECT * FROM \"Ekipe\";";
+            String query = "SELECT * FROM \"Uporabniki\" WHERE ekipa_id = " + ekipaId + ";";
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
-                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("koda")});
+                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("email")});
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,46 +75,31 @@ public class Ekipe {
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(50);
         columnModel.getColumn(1).setPreferredWidth(200);
-        columnModel.getColumn(2).setPreferredWidth(600);
+        columnModel.getColumn(2).setPreferredWidth(200);
+        columnModel.getColumn(3).setPreferredWidth(400);
 
         // Ustvarjanje plavajočega okvirja za tabelo
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
-        JButton addButton = new JButton("Dodaj novo ekipo");
-        JButton editButton = new JButton("Uredi ekipo");
-        JButton deleteButton = new JButton("Izbriši ekipo");
         JButton refreshButton = new JButton("Osveži");
-        JButton teamMembersButton = new JButton("Člani ekipe");
-        buttonsPanel.add(refreshButton);
-        buttonsPanel.add(teamMembersButton);
-        buttonsPanel.add(addButton);
-        buttonsPanel.add(editButton);
-        buttonsPanel.add(deleteButton);
-        teamMembersButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    int teamID = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
-                    ClaniEkipe claniEkipe = new ClaniEkipe(teamID);
-                    claniEkipe.show();
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite ekipo za ogled članov.");
-                }
-            }
-        });
+        JButton kickButton = new JButton("Izključi iz ekipe");
 
+        buttonsPanel.add(refreshButton);
+
+        if (Shramba.getInstance().isAdministrator()) {
+            buttonsPanel.add(kickButton);
+        }
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.setRowCount(0);
                 try {
-                    String query = "SELECT * FROM \"Ekipe\";";
+                    String query = "SELECT * FROM \"Uporabniki\" WHERE ekipa_id = " + ekipaId + ";";
                     ResultSet resultSet = db.executeQuery(query);
                     while (resultSet.next()) {
-                        model.addRow(new Object[]{resultSet.getString("id"), resultSet.getString("ime"), resultSet.getString("koda")});
+                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("email")});
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -117,47 +108,26 @@ public class Ekipe {
             }
         });
 
-        // Dodajanje poslušalcev dogodkov gumbom
-        addButton.addActionListener(new ActionListener() {
+        kickButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Dodaj novo ekipo" se prikaže sporočilo
-                EkipeForm obrazec = new EkipeForm(0);
-                obrazec.show();
-            }
-        });
-
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Uredi ekipo" se preveri izbrana vrstica in prikaže ustrezno sporočilo
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
-                    EkipeForm obrazec = new EkipeForm(Integer.parseInt(model.getValueAt(selectedRow, 0).toString()));
-                    obrazec.show();
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite ekipo za urejanje.");
-                }
-            }
-        });
-
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Izbriši ekipo" se preveri izbrana vrstica in izbriše ustrezno vrstico iz tabele
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
+                    int uporabnikId = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
                     try {
-                        String roleID = model.getValueAt(selectedRow, 0).toString();
-                        String query = "SELECT delete_ekipa(" + roleID + ");";
-                        db.executeQuery(query);
-                        model.removeRow(selectedRow);
+                        db.executeQuery("SELECT zapusti_ekipo(" + uporabnikId + ");");
+                        model.setRowCount(0);
+                        String query = "SELECT * FROM \"Uporabniki\" WHERE ekipa_id = " + ekipaId + ";";
+                        ResultSet resultSet = db.executeQuery(query);
+                        while (resultSet.next()) {
+                            model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("email")});
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Napaka pri brisanju ekipe.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite ekipo za brisanje.");
+                    JOptionPane.showMessageDialog(container, "Prosimo, izberite člana ekipe za izključitev.");
                 }
             }
         });
