@@ -14,8 +14,6 @@ public class Registracija {
     private JTextField lastNameField;
     private JLabel emailLabel;
     private JTextField emailField;
-    private JLabel usernameLabel;
-    private JTextField usernameField;
     private JLabel passwordLabel;
     private JPasswordField passwordField;
     private JLabel passwordConfirmLabel;
@@ -73,14 +71,6 @@ public class Registracija {
         emailField.setBounds(10, 320, 1004, 40); // Nastavimo pozicijo in velikost
         container.add(emailField); // Dodamo textfield v panel
 
-        usernameLabel = new JLabel("Uporabniško ime:"); // Ustvarimo nov label
-        usernameLabel.setBounds(10, 370, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(usernameLabel); // Dodamo label v panel
-
-        usernameField = new JTextField(); // Ustvarimo nov textfield
-        usernameField.setBounds(10, 410, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(usernameField); // Dodamo textfield v panel
-
         passwordLabel = new JLabel("Geslo:"); // Ustvarimo nov label
         passwordLabel.setBounds(10, 460, 1004, 40); // Nastavimo pozicijo in velikost
         container.add(passwordLabel); // Dodamo label v panel
@@ -121,12 +111,11 @@ public class Registracija {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String email = emailField.getText();
-        String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(passwordConfirmField.getPassword());
 
         // Preverimo, ali so vsa polja izpolnjena
-        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || username.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
             JOptionPane.showMessageDialog(window, "Prosimo, izpolnite vsa polja.", "Nepopolni podatki", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -140,13 +129,13 @@ public class Registracija {
         // Registriramo uporabnika
         try {
             // Preverimo, ali je e-poštni naslov že v uporabi
-            if (checkIfUsernameExists(username)) {
-                JOptionPane.showMessageDialog(window, "Uporabniško ime je že v uporabi.", "Napaka", JOptionPane.ERROR_MESSAGE);
+            if (checkIfEmailExists(email)) {
+                JOptionPane.showMessageDialog(window, "Elektronski naslov je že v uporabi.", "Napaka", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Dodamo uporabnika v bazo podatkov
-            registerUser(firstName, lastName, username, email, password);
+            registerUser(firstName, lastName, email, password);
 
             // Po uspešni registraciji lahko naredimo kaj takega, kot je prijava uporabnika ali prikaz drugega okna
             JOptionPane.showMessageDialog(window, "Uspešno ste se registrirali.", "Registracija uspešna", JOptionPane.INFORMATION_MESSAGE);
@@ -159,14 +148,14 @@ public class Registracija {
         }
     }
 
-    private boolean checkIfUsernameExists(String username) throws SQLException {
-        String query = "SELECT * FROM userji WHERE uporabniskoime = '" + username + "'";
+    private boolean checkIfEmailExists(String email) throws SQLException {
+        String query = "SELECT * FROM \"Uporabniki\" WHERE email = '" + email + "'";
         ResultSet result = db.executeQuery(query);
         return result.next();
     }
 
-    private void registerUser(String ime, String priimek, String uporabniskoime, String email, String geslo) throws SQLException {
-        String query = "SELECT insert_userji('" + ime + "', '" + priimek + "', '" + uporabniskoime + "', '" + email + "', '" + geslo + "')";
+    private void registerUser(String ime, String priimek, String email, String geslo) throws SQLException {
+        String query = "SELECT insert_uporabnik('" + ime + "', '" + priimek + "', '" + email + "', '" + geslo + "')";
         db.executeQuery(query);
     }
 

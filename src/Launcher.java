@@ -5,8 +5,8 @@ public class Launcher {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Home home = new Home();
-                home.show();
+                Prijava prijava = new Prijava();
+                prijava.show();
             }
         });
     }

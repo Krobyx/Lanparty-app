@@ -11,8 +11,8 @@ public class Prijava {
     private JFrame window;
     private Container container;
     private JLabel mainTitle;
-    private JLabel usernameLabel;
-    private JTextField usernameField;
+    private JLabel emailLabel;
+    private JTextField emailField;
     private JLabel passwordLabel;
     private JPasswordField passwordField;
     private JButton loginButton;
@@ -36,13 +36,13 @@ public class Prijava {
         mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
         container.add(mainTitle); // Dodamo label v panel
 
-        usernameLabel = new JLabel("Uporabniško ime:"); // Ustvarimo nov label
-        usernameLabel.setBounds(10, 150, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(usernameLabel); // Dodamo label v panel
+        emailLabel = new JLabel("Elektronski naslov"); // Ustvarimo nov label
+        emailLabel.setBounds(10, 150, 1004, 40); // Nastavimo pozicijo in velikost
+        container.add(emailLabel); // Dodamo label v panel
 
-        usernameField = new JTextField(); // Ustvarimo nov textfield
-        usernameField.setBounds(10, 190, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(usernameField); // Dodamo textfield v panel
+        emailField = new JTextField(); // Ustvarimo nov textfield
+        emailField.setBounds(10, 190, 1004, 40); // Nastavimo pozicijo in velikost
+        container.add(emailField); // Dodamo textfield v panel
 
         passwordLabel = new JLabel("Geslo:"); // Ustvarimo nov label
         passwordLabel.setBounds(10, 240, 1004, 40); // Nastavimo pozicijo in velikost
@@ -72,11 +72,11 @@ public class Prijava {
     }
 
     private void loginButtonActionPerformed() {
-        String username = usernameField.getText(); // Preberemo vrednost iz textfielda
+        String email = emailField.getText(); // Preberemo vrednost iz textfielda
         String password = new String(passwordField.getPassword()); // Preberemo vrednost iz textfielda
         try {
             Baza database = Baza.getInstance(); // Ustvarimo povezavo na bazo
-            ResultSet result = database.executeQuery("SELECT * FROM userji WHERE uporabniskoime = '" + username + "' AND geslo = '" + password + "';"); // Izvedemo poizvedbo
+            ResultSet result = database.executeQuery("SELECT * FROM \"Uporabniki\" WHERE email = '" + email + "' AND geslo = '" + password + "';"); // Izvedemo poizvedbo
             if (result.next()) { // Če je uporabnik najden
                 JOptionPane.showMessageDialog(window, "Uspešno ste se prijavili!"); // Izpišemo sporočilo
                 Shramba.getInstance().uporabnikId = result.getInt("id"); // Shranimo id uporabnika
@@ -84,7 +84,7 @@ public class Prijava {
                 home.show(); // Pokažemo novo okno
                 window.dispose(); // Zapremo trenutno okno
             } else { // Če uporabnik ni najden
-                JOptionPane.showMessageDialog(window, "Napačno uporabniško ime ali geslo!"); // Izpišemo sporočilo
+                JOptionPane.showMessageDialog(window, "Napačen elektronski naslov ime ali geslo!"); // Izpišemo sporočilo
             }
         } catch (SQLException e) {
             e.printStackTrace();
