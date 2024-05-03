@@ -46,6 +46,18 @@ public class Home {
                     kraji.show();
                 }
             });
+
+            JButton igre = new JButton("Igre");
+            igre.setBounds(10, 250, 200, 40);
+            container.add(igre);
+
+            igre.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Igre igre = new Igre();
+                    igre.show();
+                }
+            });
         }
     }
 

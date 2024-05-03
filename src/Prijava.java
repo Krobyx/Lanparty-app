@@ -80,6 +80,7 @@ public class Prijava {
             if (result.next()) { // Če je uporabnik najden
                 JOptionPane.showMessageDialog(window, "Uspešno ste se prijavili!"); // Izpišemo sporočilo
                 Shramba.getInstance().uporabnikId = result.getInt("id"); // Shranimo id uporabnika
+                Shramba.getInstance().uporabnikEkipaId = result.getInt("ekipa_id") == 0 ? -1 : result.getInt("ekipa_id"); // Shranimo id ekipe
                 Home home = new Home(); // Ustvarimo novo okno
                 home.show(); // Pokažemo novo okno
                 window.dispose(); // Zapremo trenutno okno

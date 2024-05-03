@@ -2,6 +2,7 @@ public class Shramba {
     // Singleton vzorec
     private static Shramba instance;
     public int uporabnikId;
+    public int uporabnikEkipaId = -1;
 
     private Shramba() {
 
