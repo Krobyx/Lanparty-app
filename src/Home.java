@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 
 public class Home {
 
@@ -9,6 +10,18 @@ public class Home {
     private Container container;
 
     private JLabel mainTitle;
+
+    private JLabel kodaSkupineLabel;
+    private JTextField kodaSkupineField;
+    private JButton pridruziSeButton;
+
+    private JLabel imeSkupineLabel;
+    private JTextField imeSkupineField;
+    private JButton ustvariSkupinoButton;
+
+    private JLabel imeSvojeSkupineLabel;
+    private JLabel kodaSvojeSkupineLabel;
+    private JButton zapustiSkupinoButton;
 
     private Baza baza;
 
@@ -58,7 +71,199 @@ public class Home {
                     igre.show();
                 }
             });
+
+            JButton ekipe = new JButton("Ekipe");
+            ekipe.setBounds(10, 300, 200, 40);
+            container.add(ekipe);
+
+            ekipe.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Ekipe ekipe = new Ekipe();
+                    ekipe.show();
+                }
+            });
+        } else {
+            imeSvojeSkupineLabel = new JLabel("Ime skupine:");
+            imeSvojeSkupineLabel.setBounds(10, 200, 200, 40);
+            container.add(imeSvojeSkupineLabel);
+
+            kodaSvojeSkupineLabel = new JLabel("Koda skupine:");
+            kodaSvojeSkupineLabel.setBounds(10, 250, 200, 40);
+            container.add(kodaSvojeSkupineLabel);
+
+            zapustiSkupinoButton = new JButton("Zapusti skupino");
+            zapustiSkupinoButton.setBounds(10, 300, 200, 40);
+            container.add(zapustiSkupinoButton);
+
+            zapustiSkupinoButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        baza.executeQuery("SELECT zapusti_ekipo(" + Shramba.getInstance().uporabnikId + ");");
+                        Shramba.getInstance().uporabnikEkipaId = -1;
+                        showJoinCreateGroup();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Napaka pri zapuščanju skupine.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+
+            kodaSkupineLabel = new JLabel("Koda skupine:");
+            kodaSkupineLabel.setBounds(10, 200, 200, 40);
+            container.add(kodaSkupineLabel);
+
+            kodaSkupineField = new JTextField();
+            kodaSkupineField.setBounds(220, 200, 200, 40);
+            container.add(kodaSkupineField);
+
+            pridruziSeButton = new JButton("Pridruži se");
+            pridruziSeButton.setBounds(10, 250, 200, 40);
+            container.add(pridruziSeButton);
+
+            pridruziSeButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    pridruziSe();
+                }
+            });
+
+            imeSkupineLabel = new JLabel("Ime skupine:");
+            imeSkupineLabel.setBounds(10, 300, 200, 40);
+            container.add(imeSkupineLabel);
+
+            imeSkupineField = new JTextField();
+            imeSkupineField.setBounds(220, 300, 200, 40);
+            container.add(imeSkupineField);
+
+            ustvariSkupinoButton = new JButton("Ustvari skupino");
+            ustvariSkupinoButton.setBounds(10, 350, 200, 40);
+            container.add(ustvariSkupinoButton);
+
+            ustvariSkupinoButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ustvariSkupino();
+                }
+            });
+
+            if (Shramba.getInstance().uporabnikEkipaId != -1) {
+                removeJoinCreateGroup();
+            } else {
+                showJoinCreateGroup();
+            }
         }
+
+        JButton logout = new JButton("Odjava");
+        logout.setBounds(10, 600, 200, 40);
+        container.add(logout);
+
+        logout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logout();
+            }
+        });
+    }
+
+    private void removeJoinCreateGroup() {
+        kodaSkupineLabel.setVisible(false);
+        kodaSkupineField.setVisible(false);
+        pridruziSeButton.setVisible(false);
+        imeSkupineLabel.setVisible(false);
+        imeSkupineField.setVisible(false);
+        ustvariSkupinoButton.setVisible(false);
+
+        imeSvojeSkupineLabel.setVisible(true);
+        kodaSvojeSkupineLabel.setVisible(true);
+        zapustiSkupinoButton.setVisible(true);
+
+        try {
+            ResultSet resultSet = baza.executeQuery("SELECT get_ekipa_ime(" + Shramba.getInstance().uporabnikEkipaId + ");");
+            if (resultSet.next()) {
+                imeSvojeSkupineLabel.setText("Ime skupine: " + resultSet.getString(1));
+            }
+
+            resultSet = baza.executeQuery("SELECT get_ekipa_koda(" + Shramba.getInstance().uporabnikEkipaId + ");");
+            if (resultSet.next()) {
+                kodaSvojeSkupineLabel.setText("Koda skupine: " + resultSet.getString(1));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju imena skupine.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void showJoinCreateGroup() {
+        kodaSkupineLabel.setVisible(true);
+        kodaSkupineField.setVisible(true);
+        pridruziSeButton.setVisible(true);
+        imeSkupineLabel.setVisible(true);
+        imeSkupineField.setVisible(true);
+        ustvariSkupinoButton.setVisible(true);
+
+        imeSvojeSkupineLabel.setVisible(false);
+        kodaSvojeSkupineLabel.setVisible(false);
+        zapustiSkupinoButton.setVisible(false);
+    }
+
+    private void pridruziSe() {
+        String kodaSkupine = kodaSkupineField.getText();
+
+        if (kodaSkupine.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Izpolnite vsa polja.", "Napaka", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            String query = "SELECT pridruzi_se_ekipi(" + Shramba.getInstance().uporabnikId + ", '" + kodaSkupine + "');";
+            baza.executeQuery(query);
+
+            ResultSet resultSet = baza.executeQuery("SELECT get_uporabnik_ekipa_id(" + Shramba.getInstance().uporabnikId + ");");
+            if (resultSet.next()) {
+                Shramba.getInstance().uporabnikEkipaId = resultSet.getInt(1);
+            }
+
+            removeJoinCreateGroup();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri pridruževanju skupini.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void ustvariSkupino() {
+        String imeSkupine = imeSkupineField.getText();
+
+        if (imeSkupine.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Izpolnite vsa polja.", "Napaka", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            String query = "SELECT ustvari_ekipo('" + imeSkupine + "', " + Shramba.getInstance().uporabnikId + ");";
+            baza.executeQuery(query);
+
+            ResultSet resultSet = baza.executeQuery("SELECT get_uporabnik_ekipa_id(" + Shramba.getInstance().uporabnikId + ");");
+            if (resultSet.next()) {
+                Shramba.getInstance().uporabnikEkipaId = resultSet.getInt(1);
+            }
+
+            removeJoinCreateGroup();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri ustvarjanju skupine.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void logout() {
+        // Implementacija odjave
+        Shramba.getInstance().uporabnikId = 0;
+        Shramba.getInstance().uporabnikEkipaId = -1;
+        window.dispose();
+        Prijava prijava = new Prijava();
+        prijava.show();
     }
 
     public void show() {
