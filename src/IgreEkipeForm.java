@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.SimpleTimeZone;
 
 public class IgreEkipeForm {
 
@@ -16,48 +15,52 @@ public class IgreEkipeForm {
 
     public IgreEkipeForm(int ekipaId) {
         this.ekipaId = ekipaId;
-        System.out.println(ekipaId);
 
-        window = new JFrame("Dodaj igro k ekipi"); // Ustvarimo novo okno
-        window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
-        window.setBounds(10, 10, 1024, 768); // Nastavimo pozicijo in velikost okna
-        window.setLayout(null); // Nastavimo postavitev okna
-        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Nastavimo akcijo ob zaprtju okna
-        window.setLocationRelativeTo(null); // Nastavimo pozicijo okna na sredino
-        window.setResizable(false); // Omogočimo spreminjanje velikosti okna
+        window = new JFrame("Dodaj igro k ekipi");
+        window.setPreferredSize(new Dimension(400, 300));
+        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        window.setLocationRelativeTo(null);
+        window.setResizable(false);
 
-        container = window.getContentPane(); // Ustvarimo nov container
+        container = window.getContentPane();
+        container.setLayout(new BorderLayout());
+        container.setBackground(Color.WHITE); // Set background color
 
-        mainTitle = new JLabel("Dodaj igro k ekipi"); // Ustvarimo nov label
-        mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
-        mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
-        container.add(mainTitle); // Dodamo label v container
+        mainTitle = new JLabel("Dodaj igro k ekipi");
+        mainTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        mainTitle.setForeground(Color.BLUE); // Set text color
+        container.add(mainTitle, BorderLayout.NORTH);
 
-        imeLabel = new JLabel("Ime igre:"); // Ustvarimo nov label
-        imeLabel.setBounds(10, 150, 200, 40); // Nastavimo pozicijo in velikost
-        container.add(imeLabel); // Dodamo label v container
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridLayout(1, 2));
+        formPanel.setBackground(Color.WHITE); // Set background color
 
-        imeField = new JTextField(); // Ustvarimo nov textfield
-        imeField.setBounds(220, 150, 200, 40); // Nastavimo pozicijo in velikost
-        container.add(imeField); // Dodamo textfield v container
+        imeLabel = new JLabel("Ime igre:");
+        imeLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        formPanel.add(imeLabel);
 
-        addButton = new JButton("Dodaj"); // Ustvarimo nov gumb
-        addButton.setBounds(10, 450, 100, 40); // Nastavimo pozicijo in velikost
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dodajIgro();
-            }
-        });
-        container.add(addButton); // Dodamo gumb v container
+        imeField = new JTextField();
+        imeField.setFont(new Font("Arial", Font.PLAIN, 18));
+        formPanel.add(imeField);
 
-        window.setVisible(true); // Naredimo okno vidno
+        container.add(formPanel, BorderLayout.CENTER);
+
+        addButton = new JButton("Dodaj");
+        addButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        addButton.setForeground(Color.GREEN); // Set button text color
+        addButton.addActionListener(e -> dodajIgro());
+        container.add(addButton, BorderLayout.SOUTH);
+
+        window.pack();
+        window.setVisible(true);
     }
 
     private void dodajIgro() {
-        String ime = imeField.getText();
+        String ime = imeField.getText().trim();
 
         if (ime.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Izpolnite vsa polja.", "Napaka", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(window, "Vnesite ime igre.", "Napaka", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -70,24 +73,23 @@ public class IgreEkipeForm {
                 int igraId = rs.getInt("id");
 
                 if (igraId < 1) {
-                    JOptionPane.showMessageDialog(null, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(window, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 db.executeQuery("SELECT dodaj_igro_ekipi(" + ekipaId + ", " + igraId + ");");
+                JOptionPane.showMessageDialog(window, "Igra uspešno dodana k ekipi.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
+                window.dispose();
             } else {
-                JOptionPane.showMessageDialog(null, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                return;
+                JOptionPane.showMessageDialog(window, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
             }
-
-            window.dispose();
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Napaka pri dodajanju igre. (Preverite, če igra že obstaja)", "Napaka", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(window, "Napaka pri dodajanju igre. (Preverite, če igra že obstaja)", "Napaka", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void show() {
-        window.setVisible(true); // Naredimo okno vidno
+        window.setVisible(true);
     }
 }

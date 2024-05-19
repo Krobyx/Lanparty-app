@@ -19,56 +19,68 @@ public class Prijava {
     private JButton registerButton;
 
     public Prijava() {
-        window = new JFrame("Prijava"); // Ustvarimo novo okno
-        window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
-        window.setBounds(10, 10, 1024, 768); // Nastavimo pozicijo in velikost okna
-        window.setLayout(new BorderLayout()); // Nastavimo postavitev okna
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Nastavimo akcijo ob zaprtju okna
-        window.setLocationRelativeTo(null); // Nastavimo pozicijo okna na sredino
-        window.setResizable(false); // Omogočimo spreminjanje velikosti okna
+        window = new JFrame("Prijava"); // Create a new window
+        window.setPreferredSize(new Dimension(600, 400)); // Set window size
+        window.setBounds(10, 10, 600, 400); // Set window position and size
+        window.setLayout(new BorderLayout()); // Set window layout
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Set window close operation
+        window.setLocationRelativeTo(null); // Set window position to center
+        window.setResizable(false); // Enable window resizing
 
-        container = window.getContentPane(); // Ustvarimo nov container
-        container.setLayout(null); // Nastavimo postavitev panela
+        container = window.getContentPane(); // Create a new container
+        container.setLayout(null); // Set panel layout
 
-        mainTitle = new JLabel("Prijava"); // Ustvarimo nov label
-        mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
-        mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT); // Nastavimo poravnavo
-        mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
-        container.add(mainTitle); // Dodamo label v panel
+        // Set the same background color and font settings as EkipeForm
+        container.setBackground(Color.LIGHT_GRAY); // Set background color
 
-        emailLabel = new JLabel("Elektronski naslov"); // Ustvarimo nov label
-        emailLabel.setBounds(10, 150, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(emailLabel); // Dodamo label v panel
+        mainTitle = new JLabel("Prijava"); // Create a new label
+        mainTitle.setFont(new Font("Arial", Font.BOLD, 36)); // Set font size and style
+        mainTitle.setForeground(Color.DARK_GRAY); // Set text color
+        mainTitle.setBounds(10, 20, 580, 50); // Set position and size
+        mainTitle.setHorizontalAlignment(SwingConstants.CENTER); // Set horizontal alignment
+        container.add(mainTitle); // Add label to container
 
-        emailField = new JTextField(); // Ustvarimo nov textfield
-        emailField.setBounds(10, 190, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(emailField); // Dodamo textfield v panel
+        emailLabel = new JLabel("Elektronski naslov"); // Create a new label
+        emailLabel.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        emailLabel.setBounds(50, 100, 200, 40); // Set position and size
+        container.add(emailLabel); // Add label to container
 
-        passwordLabel = new JLabel("Geslo:"); // Ustvarimo nov label
-        passwordLabel.setBounds(10, 240, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(passwordLabel); // Dodamo label v panel
+        emailField = new JTextField(); // Create a new text field
+        emailField.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        emailField.setBounds(200, 100, 300, 40); // Set position and size
+        container.add(emailField); // Add text field to container
 
-        passwordField = new JPasswordField(); // Ustvarimo nov textfield
-        passwordField.setBounds(10, 280, 1004, 40); // Nastavimo pozicijo in velikost
-        container.add(passwordField); // Dodamo textfield v panel
+        passwordLabel = new JLabel("Geslo:"); // Create a new label
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        passwordLabel.setBounds(50, 150, 200, 40); // Set position and size
+        container.add(passwordLabel); // Add label to container
 
-        loginButton = new JButton("Prijavi se"); // Ustvarimo nov gumb
-        loginButton.setBounds(10, 330, 1004, 40); // Nastavimo pozicijo in velikost
+        passwordField = new JPasswordField(); // Create a new password field
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        passwordField.setBounds(200, 150, 300, 40); // Set position and size
+        container.add(passwordField); // Add password field to container
+
+        loginButton = new JButton("Prijavi se"); // Create a new button
+        loginButton.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        loginButton.setForeground(Color.GREEN); // Set text color
+        loginButton.setFocusPainted(false); // Disable focus painting
+        loginButton.setBounds(200, 200, 150, 40); // Set position and size
         loginButton.addActionListener( new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginButtonActionPerformed();
             }
-        }); // Dodamo listener na gumb
-        container.add(loginButton); // Dodamo gumb v panel
+        }); // Add action listener to button
+        container.add(loginButton); // Add button to container
 
-        registerButton = new JButton("Pojdi na registracijo"); // Ustvarimo nov gumb
-        registerButton.setBounds(10, 650, 1004, 40); // Nastavimo pozicijo in velikost
+        registerButton = new JButton("Pojdi na registracijo"); // Create a new button
+        registerButton.setFont(new Font("Arial", Font.PLAIN, 18)); // Set font size and style
+        registerButton.setBounds(200, 250, 250, 40); // Set position and size
         registerButton.addActionListener( new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 registerButtonActionPerformed(evt);
             }
-        });  // Nastavimo akcijo ob kliku na gumb
-        container.add(registerButton); // Dodamo gumb v panel
+        });  // Add action listener to button
+        container.add(registerButton); // Add button to container
     }
 
     private void loginButtonActionPerformed() {

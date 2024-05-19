@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+
 public class Igre {
     private JFrame window; // Okno aplikacije
     private Container container; // Glavni vsebnik za elemente uporabniškega vmesnika
@@ -33,30 +34,23 @@ public class Igre {
         // Inicializacija glavnega vsebnika
         container = window.getContentPane();
         container.setLayout(new BorderLayout());
+        container.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
 
         // Dodajanje glavnega naslova obrazca
         mainTitle = new JLabel("Igre");
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48));
-        mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(mainTitle);
+        mainTitle.setForeground(Color.DARK_GRAY);
+        mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        container.add(mainTitle, BorderLayout.NORTH);
 
         // Ustvarjanje modela tabele
         model = new DefaultTableModel();
         model.addColumn("ID"); // Dodajanje stolpca "ID"
         model.addColumn("Ime"); // Dodajanje stolpca "Ime"
-        model.addColumn("Opis"); // Dodajanje stolpca "Poštna številka"
+        model.addColumn("Opis"); // Dodajanje stolpca "Opis"
 
         // Pridobivanje podatkov iz podatkovne baze
-        try {
-            String query = "SELECT * FROM \"Igre\";";
-            ResultSet resultSet = db.executeQuery(query);
-            while (resultSet.next()) {
-                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("opis")});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-        }
+        fetchData();
 
         // Ustvarjanje tabele s podanim modelom
         table = new JTable(model);
@@ -76,37 +70,36 @@ public class Igre {
 
         // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
+        buttonsPanel.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
+
         JButton addButton = new JButton("Dodaj novo igro");
         JButton editButton = new JButton("Uredi igro");
         JButton deleteButton = new JButton("Izbriši igro");
         JButton refreshButton = new JButton("Osveži");
+
+        customizeButton(refreshButton);
+        customizeButton(addButton);
+        customizeButton(editButton);
+        customizeButton(deleteButton);
+
         buttonsPanel.add(refreshButton);
         buttonsPanel.add(addButton);
         buttonsPanel.add(editButton);
         buttonsPanel.add(deleteButton);
 
+        // Dodajanje poslušalcev dogodkov gumbom
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.setRowCount(0);
-                try {
-                    String query = "SELECT * FROM \"Igre\";";
-                    ResultSet resultSet = db.executeQuery(query);
-                    while (resultSet.next()) {
-                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("opis")});
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                }
+                fetchData();
             }
         });
 
-        // Dodajanje poslušalcev dogodkov gumbom
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Dodaj novo igro" se prikaže sporočilo
                 IgreForm obrazec = new IgreForm(0);
                 obrazec.show();
             }
@@ -115,7 +108,6 @@ public class Igre {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Uredi igro" se preveri izbrana vrstica in prikaže ustrezno sporočilo
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                     IgreForm obrazec = new IgreForm(Integer.parseInt(model.getValueAt(selectedRow, 0).toString()));
@@ -129,7 +121,6 @@ public class Igre {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Izbriši igro" se preveri izbrana vrstica in izbriše ustrezno vrstico iz tabele
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                     try {
@@ -150,6 +141,29 @@ public class Igre {
         // Dodajanje elementov v glavni vsebnik
         container.add(scrollPane, BorderLayout.CENTER); // Dodajanje tabele
         container.add(buttonsPanel, BorderLayout.SOUTH); // Dodajanje panela z gumbi
+
+        window.pack();
+        window.setVisible(true);
+    }
+
+    private void customizeButton(JButton button) {
+        button.setFont(new Font("Arial", Font.PLAIN, 18));
+        button.setForeground(Color.BLUE);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(200, 40));
+    }
+
+    private void fetchData() {
+        try {
+            String query = "SELECT * FROM \"Igre\";";
+            ResultSet resultSet = db.executeQuery(query);
+            while (resultSet.next()) {
+                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("opis")});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Metoda za prikaz okna

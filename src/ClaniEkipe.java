@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+
 public class ClaniEkipe {
     private JFrame window; // Okno aplikacije
     private Container container; // Glavni vsebnik za elemente uporabniškega vmesnika
@@ -36,21 +37,23 @@ public class ClaniEkipe {
 
         // Inicializacija glavnega vsebnika
         container = window.getContentPane();
-        container.setLayout(new BorderLayout());
+        container.setLayout(new BorderLayout(20, 20));
+        container.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
 
         // Dodajanje glavnega naslova obrazca
         mainTitle = new JLabel("Člani ekipe");
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48));
+        mainTitle.setForeground(Color.DARK_GRAY); // Nastavitev barve besedila
         mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(mainTitle);
+        mainTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0)); // Dodajanje notranje obrobe za odmik
+        container.add(mainTitle, BorderLayout.NORTH);
 
         // Ustvarjanje modela tabele
         model = new DefaultTableModel();
         model.addColumn("ID"); // Dodajanje stolpca "ID"
         model.addColumn("Ime"); // Dodajanje stolpca "Ime"
-        model.addColumn("Priimek"); // Dodajanje stolpca "Poštna številka"
-        model.addColumn("Email"); // Dodajanje stolpca "Poštna številka"
-
+        model.addColumn("Priimek"); // Dodajanje stolpca "Priimek"
+        model.addColumn("Email"); // Dodajanje stolpca "Email"
 
         // Pridobivanje podatkov iz podatkovne baze
         try {
@@ -80,11 +83,22 @@ public class ClaniEkipe {
 
         // Ustvarjanje plavajočega okvirja za tabelo
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Dodajanje notranje obrobe za odmik
 
         // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja panela
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Dodajanje notranje obrobe za odmik
         JButton refreshButton = new JButton("Osveži");
         JButton kickButton = new JButton("Izključi iz ekipe");
+
+        refreshButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        refreshButton.setForeground(Color.BLUE);
+        refreshButton.setFocusPainted(false); // Onemogočanje obrobe fokusa
+
+        kickButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        kickButton.setForeground(Color.RED);
+        kickButton.setFocusPainted(false); // Onemogočanje obrobe fokusa
 
         buttonsPanel.add(refreshButton);
 
@@ -139,6 +153,7 @@ public class ClaniEkipe {
 
     // Metoda za prikaz okna
     public void show() {
+        window.pack();
         window.setVisible(true);
     }
 }

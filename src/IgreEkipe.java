@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+
 public class IgreEkipe {
     private JFrame window; // Okno aplikacije
     private Container container; // Glavni vsebnik za elemente uporabniškega vmesnika
@@ -12,7 +13,6 @@ public class IgreEkipe {
     private JTable table; // Tabela za prikaz iger
     private DefaultTableModel model; // Model tabele za shranjevanje podatkov
     private Baza db;
-
     private int ekipaId;
 
     public IgreEkipe(int ekipaId) {
@@ -37,12 +37,14 @@ public class IgreEkipe {
         // Inicializacija glavnega vsebnika
         container = window.getContentPane();
         container.setLayout(new BorderLayout());
+        container.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
 
         // Dodajanje glavnega naslova obrazca
         mainTitle = new JLabel("Zastopane igre ekipe");
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48));
-        mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(mainTitle);
+        mainTitle.setForeground(Color.DARK_GRAY);
+        mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        container.add(mainTitle, BorderLayout.NORTH);
 
         // Ustvarjanje modela tabele
         model = new DefaultTableModel();
@@ -51,16 +53,7 @@ public class IgreEkipe {
         model.addColumn("Opis"); // Dodajanje stolpca "Opis"
 
         // Pridobivanje podatkov iz podatkovne baze
-        try {
-            String query = "SELECT * FROM \"Igre\" WHERE id IN (SELECT igra_id FROM \"Ekipe_Igre\" WHERE ekipa_id = " + ekipaId + ");";
-            ResultSet resultSet = db.executeQuery(query);
-            while (resultSet.next()) {
-                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("opis")});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-        }
+        fetchData();
 
         // Ustvarjanje tabele s podanim modelom
         table = new JTable(model);
@@ -80,34 +73,33 @@ public class IgreEkipe {
 
         // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
+        buttonsPanel.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
+
         JButton addButton = new JButton("Dodaj novo igro k ekipi");
         JButton deleteButton = new JButton("Odstrani igro iz ekipe");
         JButton refreshButton = new JButton("Osveži");
+
+        customizeButton(refreshButton);
+        customizeButton(addButton);
+        customizeButton(deleteButton);
+
         buttonsPanel.add(refreshButton);
         buttonsPanel.add(addButton);
         buttonsPanel.add(deleteButton);
+
+        // Dodajanje poslušalcev dogodkov gumbom
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.setRowCount(0);
-                try {
-                    String query = "SELECT * FROM \"Igre\" WHERE id IN (SELECT igra_id FROM \"Ekipe_Igre\" WHERE ekipa_id = " + ekipaId + ");";
-                    ResultSet resultSet = db.executeQuery(query);
-                    while (resultSet.next()) {
-                        model.addRow(new Object[]{resultSet.getString("id"), resultSet.getString("ime"), resultSet.getString("opis")});
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                }
+                fetchData();
             }
         });
 
-        // Dodajanje poslušalcev dogodkov gumbom
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Dodaj novo ekipo" se prikaže sporočilo
                 IgreEkipeForm obrazec = new IgreEkipeForm(ekipaId);
                 obrazec.show();
             }
@@ -116,7 +108,6 @@ public class IgreEkipe {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ob kliku na gumb "Odstrani igro iz ekipe" se preveri izbrana vrstica in izbriše ustrezno vrstico iz tabele
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                     try {
@@ -137,6 +128,29 @@ public class IgreEkipe {
         // Dodajanje elementov v glavni vsebnik
         container.add(scrollPane, BorderLayout.CENTER); // Dodajanje tabele
         container.add(buttonsPanel, BorderLayout.SOUTH); // Dodajanje panela z gumbi
+
+        window.pack();
+        window.setVisible(true);
+    }
+
+    private void customizeButton(JButton button) {
+        button.setFont(new Font("Arial", Font.PLAIN, 18));
+        button.setForeground(Color.BLUE);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(200, 40));
+    }
+
+    private void fetchData() {
+        try {
+            String query = "SELECT * FROM \"Igre\" WHERE id IN (SELECT igra_id FROM \"Ekipe_Igre\" WHERE ekipa_id = " + ekipaId + ");";
+            ResultSet resultSet = db.executeQuery(query);
+            while (resultSet.next()) {
+                model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("opis")});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Metoda za prikaz okna

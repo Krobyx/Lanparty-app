@@ -27,35 +27,41 @@ public class IgreForm {
         window.setResizable(false); // Omogočimo spreminjanje velikosti okna
 
         container = window.getContentPane(); // Ustvarimo nov container
+        container.setBackground(Color.WHITE); // Set background color
+
+        container.setBackground(Color.LIGHT_GRAY); // Nastavimo barvo ozadja
 
         mainTitle = new JLabel("Igre Obrazec"); // Ustvarimo nov label
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
+        mainTitle.setForeground(Color.DARK_GRAY); // Set text color
         mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
         container.add(mainTitle); // Dodamo label v container
 
         imeLabel = new JLabel("Ime igre:"); // Ustvarimo nov label
+        imeLabel.setFont(new Font("Arial", Font.PLAIN, 24)); // Nastavimo velikost in obliko pisave
         imeLabel.setBounds(10, 150, 200, 40); // Nastavimo pozicijo in velikost
         container.add(imeLabel); // Dodamo label v container
 
         imeField = new JTextField(); // Ustvarimo nov textfield
+        imeField.setFont(new Font("Arial", Font.PLAIN, 24)); // Nastavimo velikost in obliko pisave
         imeField.setBounds(220, 150, 200, 40); // Nastavimo pozicijo in velikost
         container.add(imeField); // Dodamo textfield v container
 
         opisLabel = new JLabel("Opis igre:"); // Ustvarimo nov label
+        opisLabel.setFont(new Font("Arial", Font.PLAIN, 24)); // Nastavimo velikost in obliko pisave
         opisLabel.setBounds(10, 200, 200, 40); // Nastavimo pozicijo in velikost
         container.add(opisLabel); // Dodamo label v container
 
         opisField = new JTextField(); // Ustvarimo nov textfield
+        opisField.setFont(new Font("Arial", Font.PLAIN, 24)); // Nastavimo velikost in obliko pisave
         opisField.setBounds(220, 200, 200, 40); // Nastavimo pozicijo in velikost
         container.add(opisField); // Dodamo textfield v container
 
         shraniButton = new JButton("Shrani"); // Ustvarimo nov gumb
+        shraniButton.setFont(new Font("Arial", Font.PLAIN, 24)); // Nastavimo velikost in obliko pisave
         shraniButton.setBounds(10, 450, 100, 40); // Nastavimo pozicijo in velikost
-        shraniButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                shraniIgro();
-            }
-        });
+        shraniButton.setForeground(Color.GREEN); // Set button text color
+        shraniButton.addActionListener(e -> shraniIgro());
         container.add(shraniButton); // Dodamo gumb v container
 
         window.setVisible(true); // Naredimo okno vidno

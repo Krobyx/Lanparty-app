@@ -40,18 +40,22 @@ public class Home {
         window.setLayout(null); // Nastavimo postavitev okna
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Nastavimo akcijo ob zaprtju okna
         window.setLocationRelativeTo(null); // Nastavimo pozicijo okna na sredino
-        window.setResizable(false); // Omogočimo spreminjanje velikosti okna
+        window.setResizable(false); // Onemogočimo spreminjanje velikosti okna
 
         container = window.getContentPane(); // Ustvarimo nov container
+        container.setLayout(null);
+        container.setBackground(Color.LIGHT_GRAY); // Nastavitev ozadja
 
         mainTitle = new JLabel("Nadzorna plošča"); // Ustvarimo nov label
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
-        mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
+        mainTitle.setForeground(Color.DARK_GRAY); // Nastavitev barve besedila
+        mainTitle.setBounds(10, 20, 1004, 50); // Nastavimo pozicijo in velikost
+        mainTitle.setHorizontalAlignment(SwingConstants.CENTER); // Nastavimo poravnavo besedila
         container.add(mainTitle); // Dodamo label v container
 
         if (Shramba.getInstance().isAdministrator()) {
             JButton kraji = new JButton("Kraji");
-            kraji.setBounds(10, 200, 200, 40);
+            customizeButton(kraji, 10, 200);
             container.add(kraji);
 
             kraji.addActionListener(new ActionListener() {
@@ -63,7 +67,7 @@ public class Home {
             });
 
             JButton igre = new JButton("Igre");
-            igre.setBounds(10, 250, 200, 40);
+            customizeButton(igre, 10, 250);
             container.add(igre);
 
             igre.addActionListener(new ActionListener() {
@@ -75,7 +79,7 @@ public class Home {
             });
 
             JButton ekipe = new JButton("Ekipe");
-            ekipe.setBounds(10, 300, 200, 40);
+            customizeButton(ekipe, 10, 300);
             container.add(ekipe);
 
             ekipe.addActionListener(new ActionListener() {
@@ -87,15 +91,15 @@ public class Home {
             });
         } else {
             imeSvojeSkupineLabel = new JLabel("Ime skupine:");
-            imeSvojeSkupineLabel.setBounds(10, 200, 200, 40);
+            customizeLabel(imeSvojeSkupineLabel, 10, 200);
             container.add(imeSvojeSkupineLabel);
 
             kodaSvojeSkupineLabel = new JLabel("Koda skupine:");
-            kodaSvojeSkupineLabel.setBounds(10, 250, 200, 40);
+            customizeLabel(kodaSvojeSkupineLabel, 10, 250);
             container.add(kodaSvojeSkupineLabel);
 
             zapustiSkupinoButton = new JButton("Zapusti skupino");
-            zapustiSkupinoButton.setBounds(10, 300, 200, 40);
+            customizeButton(zapustiSkupinoButton, 10, 300);
             container.add(zapustiSkupinoButton);
 
             zapustiSkupinoButton.addActionListener(new ActionListener() {
@@ -113,7 +117,7 @@ public class Home {
             });
 
             claniSkupineButton = new JButton("Člani skupine");
-            claniSkupineButton.setBounds(10, 350, 200, 40);
+            customizeButton(claniSkupineButton, 10, 350);
             container.add(claniSkupineButton);
 
             claniSkupineButton.addActionListener(new ActionListener() {
@@ -125,7 +129,7 @@ public class Home {
             });
 
             igreEkipeButton = new JButton("Igre skupine");
-            igreEkipeButton.setBounds(10, 400, 200, 40);
+            customizeButton(igreEkipeButton, 10, 400);
             container.add(igreEkipeButton);
 
             igreEkipeButton.addActionListener(new ActionListener() {
@@ -137,15 +141,15 @@ public class Home {
             });
 
             kodaSkupineLabel = new JLabel("Koda skupine:");
-            kodaSkupineLabel.setBounds(10, 200, 200, 40);
+            customizeLabel(kodaSkupineLabel, 10, 200);
             container.add(kodaSkupineLabel);
 
             kodaSkupineField = new JTextField();
-            kodaSkupineField.setBounds(220, 200, 200, 40);
+            customizeTextField(kodaSkupineField, 220, 200);
             container.add(kodaSkupineField);
 
             pridruziSeButton = new JButton("Pridruži se");
-            pridruziSeButton.setBounds(10, 250, 200, 40);
+            customizeButton(pridruziSeButton, 10, 250);
             container.add(pridruziSeButton);
 
             pridruziSeButton.addActionListener(new ActionListener() {
@@ -156,15 +160,15 @@ public class Home {
             });
 
             imeSkupineLabel = new JLabel("Ime skupine:");
-            imeSkupineLabel.setBounds(10, 300, 200, 40);
+            customizeLabel(imeSkupineLabel, 10, 300);
             container.add(imeSkupineLabel);
 
             imeSkupineField = new JTextField();
-            imeSkupineField.setBounds(220, 300, 200, 40);
+            customizeTextField(imeSkupineField, 220, 300);
             container.add(imeSkupineField);
 
             ustvariSkupinoButton = new JButton("Ustvari skupino");
-            ustvariSkupinoButton.setBounds(10, 350, 200, 40);
+            customizeButton(ustvariSkupinoButton, 10, 350);
             container.add(ustvariSkupinoButton);
 
             ustvariSkupinoButton.addActionListener(new ActionListener() {
@@ -182,7 +186,7 @@ public class Home {
         }
 
         JButton logout = new JButton("Odjava");
-        logout.setBounds(10, 600, 200, 40);
+        customizeButton(logout, 10, 600);
         container.add(logout);
 
         logout.addActionListener(new ActionListener() {
@@ -191,6 +195,26 @@ public class Home {
                 logout();
             }
         });
+
+        window.pack();
+        window.setVisible(true);
+    }
+
+    private void customizeLabel(JLabel label, int x, int y) {
+        label.setFont(new Font("Arial", Font.PLAIN, 18));
+        label.setBounds(x, y, 200, 40);
+    }
+
+    private void customizeTextField(JTextField textField, int x, int y) {
+        textField.setFont(new Font("Arial", Font.PLAIN, 18));
+        textField.setBounds(x, y, 300, 40);
+    }
+
+    private void customizeButton(JButton button, int x, int y) {
+        button.setFont(new Font("Arial", Font.PLAIN, 18));
+        button.setForeground(Color.BLUE);
+        button.setFocusPainted(false);
+        button.setBounds(x, y, 200, 40);
     }
 
     private void removeJoinCreateGroup() {
