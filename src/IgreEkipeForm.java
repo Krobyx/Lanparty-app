@@ -9,7 +9,7 @@ public class IgreEkipeForm {
     private Container container;
     private JLabel mainTitle;
     private JLabel imeLabel;
-    private JTextField imeField;
+    private JComboBox<IgraItem> igreComboBox;
     private JButton addButton;
     private int ekipaId;
 
@@ -40,9 +40,22 @@ public class IgreEkipeForm {
         imeLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         formPanel.add(imeLabel);
 
-        imeField = new JTextField();
-        imeField.setFont(new Font("Arial", Font.PLAIN, 18));
-        formPanel.add(imeField);
+        igreComboBox = new JComboBox<>();
+        igreComboBox.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        try {
+            Baza db = Baza.getInstance();
+            ResultSet rs = db.executeQuery("SELECT id, ime FROM \"Igre\" ORDER BY ime;");
+
+            while (rs.next()) {
+                igreComboBox.addItem(new IgraItem(rs.getInt("id"), rs.getString("ime")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(window, "Napaka pri pridobivanju iger.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
+
+        formPanel.add(igreComboBox);
 
         container.add(formPanel, BorderLayout.CENTER);
 
@@ -57,32 +70,23 @@ public class IgreEkipeForm {
     }
 
     private void dodajIgro() {
-        String ime = imeField.getText().trim();
-
-        if (ime.isEmpty()) {
+        if (igreComboBox.getItemCount() == 0 || igreComboBox.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(window, "Vnesite ime igre.", "Napaka", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        int igraId = ((IgraItem) igreComboBox.getSelectedItem()).getId();
+
         try {
             Baza db = Baza.getInstance();
-
-            ResultSet rs = db.executeQuery("SELECT id FROM \"Igre\" WHERE ime = '" + ime + "';");
-
-            if (rs.next()) {
-                int igraId = rs.getInt("id");
-
-                if (igraId < 1) {
-                    JOptionPane.showMessageDialog(window, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                db.executeQuery("SELECT dodaj_igro_ekipi(" + ekipaId + ", " + igraId + ");");
-                JOptionPane.showMessageDialog(window, "Igra uspešno dodana k ekipi.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
-                window.dispose();
-            } else {
+            if (igraId < 1) {
                 JOptionPane.showMessageDialog(window, "Igra ne obstaja.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            db.executeQuery("SELECT dodaj_igro_ekipi(" + ekipaId + ", " + igraId + ");");
+            JOptionPane.showMessageDialog(window, "Igra uspešno dodana k ekipi.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
+            window.dispose();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(window, "Napaka pri dodajanju igre. (Preverite, če igra že obstaja)", "Napaka", JOptionPane.ERROR_MESSAGE);
@@ -91,5 +95,28 @@ public class IgreEkipeForm {
 
     public void show() {
         window.setVisible(true);
+    }
+
+    private class IgraItem {
+        private int id;
+        private String ime;
+
+        public IgraItem(int id, String ime) {
+            this.id = id;
+            this.ime = ime;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getIme() {
+            return ime;
+        }
+
+        @Override
+        public String toString() {
+            return ime;
+        }
     }
 }
